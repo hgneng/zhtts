@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
 import zhtts
 import socket
-import time 
+import time
+from scipy.io import wavfile
+import numpy as np
+from scipy.signal import resample
 
 tts = zhtts.TTS() # use fastspeech2 by default
 
@@ -27,7 +31,14 @@ while True:
                 print('收到数据:', content)
                 beginTime = time.time()
                 filepath = "/tmp/zhttsOutput.wav"
-                tts.text2wav(content, filepath)
+
+                # 合成数据并从24000 float转为16000 short
+                float32Data = tts.synthesis(content)
+                newLength = int(len(float32Data) * 16000 / 24000)
+                resampledAudio = resample(float32Data, newLength)
+                shortData = (resampledAudio * 32767).astype(np.int16)
+                wavfile.write(filepath, 16000, shortData)
+
                 endTime = time.time()
                 print('耗时：', endTime - beginTime)
                 connection.sendall(filepath.encode())  # 发送数据给客户端

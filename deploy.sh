@@ -9,4 +9,4 @@ pip install .
 
 # copy file to /opt/EmotiVoice
 echo '===== install zhttsServer.py ====='
-cp zhttsServer.py /usr/bin/zhttsServer.py
+sudo cp zhttsServer.py /usr/bin/zhttsServer.py
